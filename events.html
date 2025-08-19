@@ -1,1 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Events - 208 Groups Pvt Ltd</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        .gradient-text-event { background: linear-gradient(90deg, #c084fc, #a78bfa, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        #gameCanvas { background-color: rgba(17, 24, 39, 0.8); border: 2px solid #4f46e5; border-radius: 1rem; box-shadow: 0 0 20px rgba(79, 70, 229, 0.5); cursor: none; }
+        .gallery-item { transition: transform 0.3s ease; }
+        .gallery-item:hover { transform: scale(1.05); }
+        .scrolling-wrapper { -ms-overflow-style: none; scrollbar-width: none; }
+        .scrolling-wrapper::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200 min-h-screen flex flex-col">
 
+    <header class="sticky top-0 z-50 bg-gray-900/80 backdrop-blur-sm border-b border-gray-700">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="text-xl sm:text-2xl font-bold tracking-tighter"><span class="gradient-text-event">208 Groups: Events</span></a>
+            <a href="index.html" class="bg-indigo-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-600 transition-transform transform hover:scale-105 text-sm sm:text-base">Back to Main</a>
+        </div>
+    </header>
+
+   
+    <script>
+        // This script handles the countdown and the game logic.
+        lucide.createIcons();
+        const countDownDate = new Date("Aug 20, 2025 00:00:00").getTime();
+        const timerInterval = setInterval(function() {
+            const now = new Date().getTime();
+            const distance = countDownDate - now;
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            document.getElementById("hours").innerText = hours.toString().padStart(2, '0');
+            document.getElementById("minutes").innerText = minutes.toString().padStart(2, '0');
+            document.getElementById("seconds").innerText = seconds.toString().padStart(2, '0');
+            if (distance < 0) {
+                clearInterval(timerInterval);
+                document.getElementById("countdown-container").classList.add("hidden");
+                document.getElementById("countdown-end-message").classList.remove("hidden");
+            }
+        }, 1000);
+
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const highScoreDisplay = document.getElementById('highScoreDisplay');
+        let highScore = localStorage.getItem('mosambiHighScore') || 0;
+        highScoreDisplay.innerText = highScore;
+        let score = 0, gameOver = true, gameStarted = false;
+        const paddle = { width: 100, height: 15, x: 0, y: 0, color: '#a78bfa', shadowColor: 'rgba(167, 139, 250, 0.7)' };
+        const ball = { radius: 12, x: 0, y: 0, speed: 0, speedX: 0, speedY: 0, shadowColor: 'rgba(249, 115, 22, 0.7)' };
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+            paddle.width = Math.max(80, canvas.width / 8);
+            resetGame();
+        }
+        function resetGame() {
+            paddle.x = (canvas.width - paddle.width) / 2;
+            paddle.y = canvas.height - paddle.height - 20;
+            ball.x = canvas.width / 2;
+            ball.y = canvas.height / 2;
+            ball.speed = Math.max(12, canvas.width / 80);
+            ball.speedX = (Math.random() > 0.5 ? 1 : -1) * ball.speed * 0.7;
+            ball.speedY = ball.speed * 0.7;
+            score = 0;
+            if (gameStarted) gameOver = false;
+        }
+        function newGame() { gameStarted = true; resetGame(); }
+        function handleInput(e) {
+            let clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const canvasRect = canvas.getBoundingClientRect();
+            paddle.x = clientX - canvasRect.left - paddle.width / 2;
+            if (paddle.x < 0) paddle.x = 0;
+            if (paddle.x + paddle.width > canvas.width) paddle.x = canvas.width - paddle.width;
+        }
+        canvas.addEventListener('mousemove', handleInput);
+        canvas.addEventListener('touchmove', e => { e.preventDefault(); handleInput(e); }, { passive: false });
+        canvas.addEventListener('click', () => { if (!gameStarted || gameOver) newGame(); });
+        function update() {
+            if (gameOver) return;
+            ball.x += ball.speedX;
+            ball.y += ball.speedY;
+            if (ball.x + ball.radius > canvas.width || ball.x - ball.radius < 0) ball.speedX *= -1;
+            if (ball.y - ball.radius < 0) ball.speedY *= -1;
+            if (ball.y + ball.radius >= paddle.y && ball.y - ball.radius <= paddle.y + paddle.height && ball.x + ball.radius >= paddle.x && ball.x - ball.radius <= paddle.x + paddle.width) {
+                let collidePoint = (ball.x - (paddle.x + paddle.width / 2)) / (paddle.width / 2);
+                let angleRad = collidePoint * (Math.PI / 2.4);
+                ball.speed *= 1.1;
+                ball.speedX = ball.speed * Math.sin(angleRad);
+                ball.speedY = -ball.speed * Math.cos(angleRad);
+                score++;
+            }
+            if (ball.y - ball.radius > canvas.height) {
+                gameOver = true;
+                if (score > highScore) {
+                    highScore = score;
+                    localStorage.setItem('mosambiHighScore', highScore);
+                    highScoreDisplay.innerText = highScore;
+                }
+            }
+        }
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (!gameStarted) {
+                ctx.fillStyle = 'white';
+                ctx.font = `bold ${Math.min(30, canvas.width / 20)}px Inter`;
+                ctx.textAlign = 'center';
+                ctx.fillText('Click to Start', canvas.width / 2, canvas.height / 2);
+                ctx.font = `${Math.min(20, canvas.width / 35)}px Inter`;
+                ctx.fillText('Happy Birthday Mosambi!', canvas.width / 2, canvas.height / 2 + 50);
+                return;
+            }
+            ctx.fillStyle = paddle.color;
+            ctx.shadowColor = paddle.shadowColor;
+            ctx.shadowBlur = 15;
+            ctx.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
+            ctx.shadowBlur = 0;
+            ctx.beginPath();
+            const gradient = ctx.createRadialGradient(ball.x - 5, ball.y - 5, ball.radius * 0.1, ball.x, ball.y, ball.radius);
+            gradient.addColorStop(0, '#fcd34d');
+            gradient.addColorStop(1, '#f97316');
+            ctx.fillStyle = gradient;
+            ctx.shadowColor = ball.shadowColor;
+            ctx.shadowBlur = 20;
+            ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.closePath();
+            ctx.beginPath();
+            ctx.fillStyle = '#22c55e';
+            ctx.shadowBlur = 0;
+            ctx.fillRect(ball.x - 2, ball.y - ball.radius - 4, 4, 5);
+            ctx.closePath();
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+            ctx.font = `bold ${Math.min(80, canvas.width / 10)}px Inter`;
+            ctx.textAlign = 'center';
+            ctx.fillText(score, canvas.width / 2, canvas.height / 4);
+            if (gameOver) {
+                ctx.fillStyle = 'white';
+                ctx.font = `bold ${Math.min(30, canvas.width / 20)}px Inter`;
+                ctx.textAlign = 'center';
+                ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2);
+                ctx.font = `${Math.min(20, canvas.width / 35)}px Inter`;
+                ctx.fillText('Click to Play Again', canvas.width / 2, canvas.height / 2 + 50);
+            }
+        }
+        function gameLoop() { update(); draw(); requestAnimationFrame(gameLoop); }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+        gameLoop();
+    </script>
+</body>
+</html>
