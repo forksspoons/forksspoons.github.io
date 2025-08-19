@@ -1,1 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notes Hub - 208 Groups</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        .notes-bg { background-color: #111827; background-image: radial-gradient(circle at top right, rgba(20, 83, 45, 0.2), transparent 40%), radial-gradient(circle at bottom left, rgba(21, 94, 117, 0.2), transparent 40%); }
+        .gradient-text-notes { background: linear-gradient(90deg, #2dd4bf, #38bdf8, #6ee7b7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .note-item:hover .note-icon { color: #2dd4bf; }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200">
 
+    <header class="sticky top-0 z-50 bg-gray-900/80 backdrop-blur-sm border-b border-gray-700">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="text-xl sm:text-2xl font-bold tracking-tighter"><span class="gradient-text-notes">208 Groups: Notes</span></a>
+            <a href="index.html" class="bg-teal-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-teal-600 transition-transform transform hover:scale-105 text-sm sm:text-base">Back to Main</a>
+        </div>
+    </header>
+
+    <main>
+        <section class="notes-bg py-20 md:py-24">
+            <div class="container mx-auto px-6">
+                <div class="text-center max-w-3xl mx-auto">
+                    <h1 class="text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter">The Notes Hub</h1>
+                    <p class="mt-4 text-lg text-gray-400">All the important notes, documents, and resources in one place. Stop searching through chats and find what you need right here.</p>
+                </div>
+                <div class="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-2xl p-6">
+                        <h2 class="text-2xl font-bold mb-4 flex items-center"><i data-lucide="atom" class="w-7 h-7 mr-3 text-cyan-400"></i>Physics</h2>
+                        <ul class="space-y-3">
+                            <li class="note-item"><a href="#" target="_blank" rel="noopener noreferrer" class="flex items-center p-3 bg-gray-900 rounded-lg hover:bg-gray-700 transition-colors duration-200"><i data-lucide="file-text" class="note-icon w-5 h-5 mr-3 text-gray-400 transition-colors"></i><span class="flex-1">Chapter 1: Kinematics Notes.pdf</span><i data-lucide="arrow-up-right" class="w-4 h-4 text-gray-500"></i></a></li>
+                            <li class="note-item"><a href="#" target="_blank" rel="noopener noreferrer" class="flex items-center p-3 bg-gray-900 rounded-lg hover:bg-gray-700 transition-colors duration-200"><i data-lucide="file-text" class="note-icon w-5 h-5 mr-3 text-gray-400 transition-colors"></i><span class="flex-1">Chapter 2: Laws of Motion.pdf</span><i data-lucide="arrow-up-right" class="w-4 h-4 text-gray-500"></i></a></li>
+                        </ul>
+                    </div>
+                    <div class="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-2xl p-6">
+                        <h2 class="text-2xl font-bold mb-4 flex items-center"><i data-lucide="sigma" class="w-7 h-7 mr-3 text-teal-400"></i>Math</h2>
+                        <ul class="space-y-3">
+                            <li class="note-item"><a href="#" target="_blank" rel="noopener noreferrer" class="flex items-center p-3 bg-gray-900 rounded-lg hover:bg-gray-700 transition-colors duration-200"><i data-lucide="file-text" class="note-icon w-5 h-5 mr-3 text-gray-400 transition-colors"></i><span class="flex-1">Calculus Formula Sheet.pdf</span><i data-lucide="arrow-up-right" class="w-4 h-4 text-gray-500"></i></a></li>
+                             <li class="note-item"><a href="#" target="_blank" rel="noopener noreferrer" class="flex items-center p-3 bg-gray-900 rounded-lg hover:bg-gray-700 transition-colors duration-200"><i data-lucide="file-text" class="note-icon w-5 h-5 mr-3 text-gray-400 transition-colors"></i><span class="flex-1">Trigonometry Identities.pdf</span><i data-lucide="arrow-up-right" class="w-4 h-4 text-gray-500"></i></a></li>
+                        </ul>
+                    </div>
+                    <div class="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-2xl p-6">
+                        <h2 class="text-2xl font-bold mb-4 flex items-center"><i data-lucide="book-open" class="w-7 h-7 mr-3 text-emerald-400"></i>Literature</h2>
+                        <ul class="space-y-3">
+                           <li class="note-item"><a href="#" target="_blank" rel="noopener noreferrer" class="flex items-center p-3 bg-gray-900 rounded-lg hover:bg-gray-700 transition-colors duration-200"><i data-lucide="file-text" class="note-icon w-5 h-5 mr-3 text-gray-400 transition-colors"></i><span class="flex-1">The Great Gatsby - Themes.pdf</span><i data-lucide="arrow-up-right" class="w-4 h-4 text-gray-500"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-900 border-t border-gray-700">
+        <div class="container mx-auto px-6 py-6 text-center text-gray-500"><p>&copy; 2025 208 Groups Pvt Ltd. Academic Division.</p></div>
+    </footer>
+
+    <script> lucide.createIcons(); </script>
+</body>
+</html>
