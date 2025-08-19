@@ -1,1 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Meta Tags for SEO and proper rendering -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>208 Groups Pvt Ltd - Utensil Rentals</title>
+    <meta name="description" content="Official website for utensil rentals and community events by 208 Groups.">
 
+   
+    <!-- this is pure slop. ik not meant to be a serious proj -->
+
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍴</text></svg>">
+    
+    <!-- External Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Custom Styles -->
+    <style>
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        body.overflow-hidden { overflow: hidden; }
+        .hero-bg { background-color: #111827; background-image: radial-gradient(circle at top right, rgba(99, 102, 241, 0.2), transparent 40%), radial-gradient(circle at bottom left, rgba(168, 85, 247, 0.2), transparent 40%); }
+        .gradient-text { background: linear-gradient(90deg, #a78bfa, #818cf8, #60a5fa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .form-input:focus { outline: 2px solid #818cf8; box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.3); border-color: #818cf8; }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200">
+
+    <!-- 
+        Header Section
+        - Sticky to the top for easy navigation.
+        - Includes a responsive hamburger menu for mobile.
+    -->
+    <header class="sticky top-0 z-50 bg-gray-900/80 backdrop-blur-sm border-b border-gray-700">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-xl sm:text-2xl font-bold tracking-tighter z-50">
+                <a href="index.html" class="gradient-text">208 Groups</a>
+            </h1>
+            
+            <!-- Desktop Navigation -->
+            <nav class="hidden md:flex items-center space-x-6">
+                <a href="notes.html" class="hover:text-indigo-400 transition-colors">Notes Hub</a>
+                <a href="vault.html" class="hover:text-indigo-400 transition-colors">Memory Vault</a>
+                <a href="#contact" class="hover:text-indigo-400 transition-colors">Contact</a>
+                <a href="events.html" class="bg-indigo-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-600 transition-transform transform hover:scale-105 text-sm">
+                    Mosambi Time
+                </a>
+            </nav>
+
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-button" class="md:hidden z-50">
+                <i id="menu-open-icon" data-lucide="menu" class="w-6 h-6"></i>
+                <i id="menu-close-icon" data-lucide="x" class="w-6 h-6 hidden"></i>
+            </button>
+        </div>
+        
+        <!-- Mobile Menu Overlay -->
+        <div id="mobile-menu" class="hidden md:hidden fixed inset-0 bg-gray-900/95 backdrop-blur-lg z-40">
+            <nav class="flex flex-col items-center justify-center h-full text-2xl space-y-8">
+                <a href="notes.html" class="mobile-link hover:text-indigo-400 transition-colors">Notes Hub</a>
+                <a href="vault.html" class="mobile-link hover:text-indigo-400 transition-colors">Memory Vault</a>
+                <a href="#contact" class="mobile-link hover:text-indigo-400 transition-colors">Contact</a>
+                <a href="events.html" class="bg-indigo-500 text-white font-bold py-3 px-6 rounded-lg text-lg mt-8">
+                    Mosambi Time
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main>
+        <!-- 
+            Hero Section
+            - The main landing view with the primary call to action.
+        -->
+        <section class="hero-bg py-20 md:py-32">
+            <div class="container mx-auto text-center px-6">
+                <h2 class="text-4xl sm:text-5xl md:text-7xl font-black tracking-tighter mb-4">Done with Disposables?</h2>
+                <p class="text-lg sm:text-xl md:text-2xl font-bold gradient-text mb-8">Rent Spoons & Forks. Be a Party Legend.</p>
+                <p class="max-w-2xl mx-auto text-gray-400 mb-10">
+                    Why buy when you can rent? For your next big bash or get-together, get quality cutlery without the clutter. We handle the shiny stuff, you handle the good times.
+                </p>
+                <a href="#payment" class="bg-gray-100 text-gray-900 font-bold py-3 px-8 rounded-lg text-lg hover:bg-gray-200 transition-transform transform hover:scale-105">
+                    Learn More
+                </a>
+            </div>
+        </section>
+
+        <!-- 
+            Payment/Info Section
+            - PRIVACY: UPI ID and QR code removed to prevent public scraping.
+            - Directs users to contact for payment details.
+        -->
+        <section id="payment" class="py-20 bg-gray-800">
+            <div class="container mx-auto px-6 text-center">
+                <h3 class="text-sm font-bold uppercase text-indigo-400 tracking-widest">Simple & Private</h3>
+                <h2 class="text-4xl md:text-5xl font-extrabold mt-2">How to Rent</h2>
+                <p class="max-w-2xl mx-auto text-gray-400 mt-4">
+                    Our process is straightforward. To ensure privacy and prevent misuse, payment details are shared directly. Please get in touch via the official WhatsApp group to confirm availability and receive payment information.
+                </p>
+            </div>
+        </section>
+
+        <!-- 
+            Contact Section
+            - PRIVACY: Personal phone numbers removed. Names replaced with a generic title.
+            - The only contact point is the public WhatsApp group link.
+        -->
+        <section id="contact" class="py-20">
+            <div class="container mx-auto px-6 text-center">
+                <h3 class="text-sm font-bold uppercase text-indigo-400 tracking-widest">Get In Touch</h3>
+                <h2 class="text-4xl md:text-5xl font-extrabold mt-2 mb-12">Talk to Us</h2>
+                <div class="flex flex-wrap justify-center gap-8 md:gap-16">
+                    <div class="text-center">
+                        <i data-lucide="users" class="w-16 h-16 mx-auto text-indigo-400 mb-4"></i>
+                        <h4 class="text-2xl font-bold">Residents of 208</h4>
+                        <p class="text-lg text-gray-400">Rental & Event Managers</p>
+                    </div>
+                    <div class="text-center">
+                        <i data-lucide="message-circle" class="w-16 h-16 mx-auto text-green-400 mb-4"></i>
+                        <h4 class="text-2xl font-bold">Official Query Group</h4>
+                        <a href="https://chat.whatsapp.com/K1CwCDsSbhXFOW4dypEhH4" target="_blank" rel="noopener noreferrer" class="text-lg text-gray-300 hover:text-white transition-colors underline">
+                            Join the "Tormentors"
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 border-t border-gray-700">
+        <div class="container mx-auto px-6 py-6 text-center text-gray-500">
+            <p>&copy; 2025 208 Groups Pvt Ltd. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript for Mobile Menu -->
+    <script>
+        lucide.createIcons();
+
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const openIcon = document.getElementById('menu-open-icon');
+        const closeIcon = document.getElementById('menu-close-icon');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+
+        const toggleMenu = () => {
+            mobileMenu.classList.toggle('hidden');
+            openIcon.classList.toggle('hidden');
+            closeIcon.classList.toggle('hidden');
+            document.body.classList.toggle('overflow-hidden');
+        };
+
+        mobileMenuButton.addEventListener('click', toggleMenu);
+        mobileLinks.forEach(link => link.addEventListener('click', toggleMenu));
+    </script>
+</body>
+</html>
