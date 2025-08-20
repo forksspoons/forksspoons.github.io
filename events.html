@@ -1,160 +1,151 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Meta Tags for SEO and proper rendering -->
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Events - 208 Groups Pvt Ltd</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The 208 Venture Challenge</title>
+    <meta name="description" content="Official page for The 208 Venture Challenge, the inaugural event for the Robotics and Entrepreneurship clubs.">
+
+    <!-- AI Author Comment: Per user request, a note on this code's origin. -->
+    <!-- I know this is blatantly using AI to make a website. I'm fully aware. 
+         This was meant to be slop anyway, a fun project to get up and running quickly. 
+         The focus is on the community, not the code's artisanal purity. -->
+
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏆</text></svg>">
+    
+    <!-- External Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Custom Styles -->
     <style>
+        html { scroll-behavior: smooth; }
         body { font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        .hero-bg { background-color: #111827; background-image: radial-gradient(circle at top right, rgba(168, 85, 247, 0.2), transparent 40%), radial-gradient(circle at bottom left, rgba(99, 102, 241, 0.2), transparent 40%); }
         .gradient-text-event { background: linear-gradient(90deg, #c084fc, #a78bfa, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        #gameCanvas { background-color: rgba(17, 24, 39, 0.8); border: 2px solid #4f46e5; border-radius: 1rem; box-shadow: 0 0 20px rgba(79, 70, 229, 0.5); cursor: none; }
-        .gallery-item { transition: transform 0.3s ease; }
-        .gallery-item:hover { transform: scale(1.05); }
-        .scrolling-wrapper { -ms-overflow-style: none; scrollbar-width: none; }
-        .scrolling-wrapper::-webkit-scrollbar { display: none; }
+        .section-bg { background-color: rgba(17, 24, 39, 0.5); }
     </style>
 </head>
-<body class="bg-gray-900 text-gray-200 min-h-screen flex flex-col">
+<body class="bg-gray-900 text-gray-200">
 
+    <!-- Header -->
     <header class="sticky top-0 z-50 bg-gray-900/80 backdrop-blur-sm border-b border-gray-700">
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="index.html" class="text-xl sm:text-2xl font-bold tracking-tighter"><span class="gradient-text-event">208 Groups: Events</span></a>
+            <a href="index.html" class="text-xl sm:text-2xl font-bold tracking-tighter"><span class="gradient-text-event">The 208 Challenge</span></a>
             <a href="index.html" class="bg-indigo-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-600 transition-transform transform hover:scale-105 text-sm sm:text-base">Back to Main</a>
         </div>
     </header>
 
-   
-    <script>
-        // This script handles the countdown and the game logic.
-        lucide.createIcons();
-        const countDownDate = new Date("Aug 20, 2025 00:00:00").getTime();
-        const timerInterval = setInterval(function() {
-            const now = new Date().getTime();
-            const distance = countDownDate - now;
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-            document.getElementById("hours").innerText = hours.toString().padStart(2, '0');
-            document.getElementById("minutes").innerText = minutes.toString().padStart(2, '0');
-            document.getElementById("seconds").innerText = seconds.toString().padStart(2, '0');
-            if (distance < 0) {
-                clearInterval(timerInterval);
-                document.getElementById("countdown-container").classList.add("hidden");
-                document.getElementById("countdown-end-message").classList.remove("hidden");
-            }
-        }, 1000);
+    <!-- Main Content -->
+    <main>
+        <!-- Hero Section -->
+        <section class="hero-bg py-20 md:py-28 text-center">
+            <div class="container mx-auto px-6">
+                <h1 class="text-4xl sm:text-5xl md:text-7xl font-black tracking-tighter">The 208 Venture Challenge</h1>
+                <p class="mt-4 text-lg sm:text-xl md:text-2xl font-bold gradient-text-event">Build. Compete. Lead.</p>
+                <p class="mt-6 max-w-3xl mx-auto text-gray-400">
+                    A full-day, project-based competition to inaugurate the new Robotics & Entrepreneurship Clubs. This is your chance to build real-world skills, create a tangible project for your profile, and earn a leadership position.
+                </p>
+                <a href="#pricing" class="mt-8 inline-block bg-white text-gray-900 font-bold py-3 px-8 rounded-lg text-lg hover:bg-gray-200 transition-transform transform hover:scale-105">
+                    Register Now
+                </a>
+            </div>
+        </section>
 
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        const highScoreDisplay = document.getElementById('highScoreDisplay');
-        let highScore = localStorage.getItem('mosambiHighScore') || 0;
-        highScoreDisplay.innerText = highScore;
-        let score = 0, gameOver = true, gameStarted = false;
-        const paddle = { width: 100, height: 15, x: 0, y: 0, color: '#a78bfa', shadowColor: 'rgba(167, 139, 250, 0.7)' };
-        const ball = { radius: 12, x: 0, y: 0, speed: 0, speedX: 0, speedY: 0, shadowColor: 'rgba(249, 115, 22, 0.7)' };
-        function resizeCanvas() {
-            const container = canvas.parentElement;
-            canvas.width = container.clientWidth;
-            canvas.height = container.clientHeight;
-            paddle.width = Math.max(80, canvas.width / 8);
-            resetGame();
-        }
-        function resetGame() {
-            paddle.x = (canvas.width - paddle.width) / 2;
-            paddle.y = canvas.height - paddle.height - 20;
-            ball.x = canvas.width / 2;
-            ball.y = canvas.height / 2;
-            ball.speed = Math.max(12, canvas.width / 80);
-            ball.speedX = (Math.random() > 0.5 ? 1 : -1) * ball.speed * 0.7;
-            ball.speedY = ball.speed * 0.7;
-            score = 0;
-            if (gameStarted) gameOver = false;
-        }
-        function newGame() { gameStarted = true; resetGame(); }
-        function handleInput(e) {
-            let clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            const canvasRect = canvas.getBoundingClientRect();
-            paddle.x = clientX - canvasRect.left - paddle.width / 2;
-            if (paddle.x < 0) paddle.x = 0;
-            if (paddle.x + paddle.width > canvas.width) paddle.x = canvas.width - paddle.width;
-        }
-        canvas.addEventListener('mousemove', handleInput);
-        canvas.addEventListener('touchmove', e => { e.preventDefault(); handleInput(e); }, { passive: false });
-        canvas.addEventListener('click', () => { if (!gameStarted || gameOver) newGame(); });
-        function update() {
-            if (gameOver) return;
-            ball.x += ball.speedX;
-            ball.y += ball.speedY;
-            if (ball.x + ball.radius > canvas.width || ball.x - ball.radius < 0) ball.speedX *= -1;
-            if (ball.y - ball.radius < 0) ball.speedY *= -1;
-            if (ball.y + ball.radius >= paddle.y && ball.y - ball.radius <= paddle.y + paddle.height && ball.x + ball.radius >= paddle.x && ball.x - ball.radius <= paddle.x + paddle.width) {
-                let collidePoint = (ball.x - (paddle.x + paddle.width / 2)) / (paddle.width / 2);
-                let angleRad = collidePoint * (Math.PI / 2.4);
-                ball.speed *= 1.1;
-                ball.speedX = ball.speed * Math.sin(angleRad);
-                ball.speedY = -ball.speed * Math.cos(angleRad);
-                score++;
-            }
-            if (ball.y - ball.radius > canvas.height) {
-                gameOver = true;
-                if (score > highScore) {
-                    highScore = score;
-                    localStorage.setItem('mosambiHighScore', highScore);
-                    highScoreDisplay.innerText = highScore;
-                }
-            }
-        }
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            if (!gameStarted) {
-                ctx.fillStyle = 'white';
-                ctx.font = `bold ${Math.min(30, canvas.width / 20)}px Inter`;
-                ctx.textAlign = 'center';
-                ctx.fillText('Click to Start', canvas.width / 2, canvas.height / 2);
-                ctx.font = `${Math.min(20, canvas.width / 35)}px Inter`;
-                ctx.fillText('Happy Birthday Mosambi!', canvas.width / 2, canvas.height / 2 + 50);
-                return;
-            }
-            ctx.fillStyle = paddle.color;
-            ctx.shadowColor = paddle.shadowColor;
-            ctx.shadowBlur = 15;
-            ctx.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
-            ctx.shadowBlur = 0;
-            ctx.beginPath();
-            const gradient = ctx.createRadialGradient(ball.x - 5, ball.y - 5, ball.radius * 0.1, ball.x, ball.y, ball.radius);
-            gradient.addColorStop(0, '#fcd34d');
-            gradient.addColorStop(1, '#f97316');
-            ctx.fillStyle = gradient;
-            ctx.shadowColor = ball.shadowColor;
-            ctx.shadowBlur = 20;
-            ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.closePath();
-            ctx.beginPath();
-            ctx.fillStyle = '#22c55e';
-            ctx.shadowBlur = 0;
-            ctx.fillRect(ball.x - 2, ball.y - ball.radius - 4, 4, 5);
-            ctx.closePath();
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-            ctx.font = `bold ${Math.min(80, canvas.width / 10)}px Inter`;
-            ctx.textAlign = 'center';
-            ctx.fillText(score, canvas.width / 2, canvas.height / 4);
-            if (gameOver) {
-                ctx.fillStyle = 'white';
-                ctx.font = `bold ${Math.min(30, canvas.width / 20)}px Inter`;
-                ctx.textAlign = 'center';
-                ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2);
-                ctx.font = `${Math.min(20, canvas.width / 35)}px Inter`;
-                ctx.fillText('Click to Play Again', canvas.width / 2, canvas.height / 2 + 50);
-            }
-        }
-        function gameLoop() { update(); draw(); requestAnimationFrame(gameLoop); }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-        gameLoop();
-    </script>
+        <!-- Competitions & Scoring Section -->
+        <section id="competitions" class="py-20">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-5xl font-extrabold">The Four Challenges</h2>
+                    <p class="mt-4 max-w-2xl mx-auto text-gray-400">Choose any two competitions to showcase your skills.</p>
+                </div>
+                
+                <!-- New, Detailed Scoring Explanation Box -->
+                <div class="max-w-3xl mx-auto bg-gray-800/50 border border-indigo-500/30 rounded-2xl p-6 mb-16">
+                    <h3 class="text-2xl font-bold text-center mb-4 gradient-text-event">How Scoring Works</h3>
+                    <ul class="space-y-3 text-gray-300 list-disc list-inside text-left">
+                        <li>You will compete in **Duos (teams of 2)** for each of your two chosen events.</li>
+                        <li>Each duo's project will receive a single score from the judges.</li>
+                        <li>This score is then awarded to **both members** of the duo individually. For example, if your duo scores 90 points, you both get 90 points for that event.</li>
+                        <li>Your final, individual rank is determined by the **sum of your scores** from both competitions you participated in.</li>
+                        <li>The grand prize is awarded to the single student with the highest total score.</li>
+                    </ul>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Business Pitch -->
+                    <div class="bg-gray-800 p-8 rounded-2xl border border-gray-700"><i data-lucide="lightbulb" class="w-12 h-12 text-purple-400 mb-4"></i><h3 class="text-2xl font-bold">The Business Pitch</h3><p class="mt-2 text-gray-400">Develop a 5-slide pitch deck for a new venture that solves a problem on campus. The ultimate test of your entrepreneurial spirit.</p></div>
+                    <!-- Photo-Essay -->
+                    <div class="bg-gray-800 p-8 rounded-2xl border border-gray-700"><i data-lucide="camera" class="w-12 h-12 text-purple-400 mb-4"></i><h3 class="text-2xl font-bold">The Photo-Essay</h3><p class="mt-2 text-gray-400">Capture 5 photos around campus that tell a cohesive story on a given theme. A challenge of creativity and visual storytelling.</p></div>
+                    <!-- Website Development -->
+                    <div class="bg-gray-800 p-8 rounded-2xl border border-gray-700"><i data-lucide="code-2" class="w-12 h-12 text-purple-400 mb-4"></i><h3 class="text-2xl font-bold">Website Development</h3><p class="mt-2 text-gray-400">After a crash course in HTML/CSS, build and deploy a live profile website. The winning duo gets a premium domain name for a year.</p></div>
+                    <!-- The "Brain Bout" Quiz -->
+                    <div class="bg-gray-800 p-8 rounded-2xl border border-gray-700"><i data-lucide="brain-circuit" class="w-12 h-12 text-purple-400 mb-4"></i><h3 class="text-2xl font-bold">The "Brain Bout" Quiz</h3><p class="mt-2 text-gray-400">A high-speed, multi-round quiz on logic, current events, and pop culture. Test your general knowledge under pressure.</p></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Prizes & Incentives Section -->
+        <section class="section-bg py-20">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-3xl md:text-5xl font-extrabold">Prizes & The Path to Leadership</h2>
+                <p class="mt-4 max-w-2xl mx-auto text-gray-400">The grand prize, podium positions, and club leadership roles are all awarded based on your **individual total score** from both competitions.</p>
+                <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
+                    <div class="bg-yellow-500/10 p-8 rounded-2xl border-2 border-yellow-500"><h3 class="text-2xl font-bold text-yellow-400">1st Place Winner</h3><ul class="mt-4 space-y-2 text-gray-300 list-disc list-inside"><li>**₹2,000 Cash Prize**</li><li>Physical 1st Place Certificate</li><li>1st Priority Choice for Club & Leadership Position</li></ul></div>
+                    <div class="bg-gray-400/10 p-8 rounded-2xl border border-gray-400"><h3 class="text-2xl font-bold text-gray-300">2nd Place Winner</h3><ul class="mt-4 space-y-2 text-gray-300 list-disc list-inside"><li>Physical 2nd Place Certificate</li><li>2nd Priority Choice for Club & Leadership Position</li></ul></div>
+                    <div class="bg-orange-700/10 p-8 rounded-2xl border border-orange-700"><h3 class="text-2xl font-bold text-orange-500">3rd Place Winner</h3><ul class="mt-4 space-y-2 text-gray-300 list-disc list-inside"><li>Physical 3rd Place Certificate</li><li>3rd Priority Choice for Club & Leadership Position</li></ul></div>
+                </div>
+                 <p class="mt-8 text-gray-400">Students placing 4th-7th will get priority club selection. All participants receive a digital certificate of participation.</p>
+            </div>
+        </section>
+        
+        <!-- Pricing Section -->
+        <section id="pricing" class="py-20">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12"><h2 class="text-3xl md:text-5xl font-extrabold">Registration & Fees</h2><p class="mt-4 max-w-2xl mx-auto text-gray-400">A transparent fee structure to fund the clubs and the event. The challenge will only proceed with a minimum of 24 participants.</p></div>
+                <div class="max-w-2xl mx-auto bg-gray-800 rounded-2xl p-8 border border-gray-700">
+                    <h3 class="text-2xl font-bold mb-6 text-center">Fee Breakdown</h3>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center border-b border-gray-700 pb-2"><p>Individual Registration</p><p class="font-bold text-lg"><span class="gradient-text-event">₹165</span></p></div>
+                        <p class="text-sm text-gray-400 -mt-2">Covers your entry, snacks & drinks, and contributes to the prize pool.</p>
+                        <div class="flex justify-between items-center border-b border-gray-700 pb-2"><p>First Duo Formation Fee</p><p class="font-bold text-lg"><span class="gradient-text-event">₹25</span> <span class="text-sm font-normal text-gray-400">(per student)</span></p></div>
+                        <p class="text-sm text-gray-400 -mt-2">A one-time fee for your first competition duo.</p>
+                        <div class="flex justify-between items-center border-b border-gray-700 pb-2"><p>New Duo Fee</p><p class="font-bold text-lg"><span class="gradient-text-event">₹30</span> <span class="text-sm font-normal text-gray-400">(per student)</span></p></div>
+                        <p class="text-sm text-gray-400 -mt-2">A small fee to form a new duo for your second competition.</p>
+                        <div class="flex justify-between items-center border-b border-gray-700 pb-2"><p>Competition Entry</p><p class="font-bold text-lg"><span class="gradient-text-event">₹90</span> <span class="text-sm font-normal text-gray-400">(per event)</span></p></div>
+                        <p class="text-sm text-gray-400 -mt-2">Covers all resources and platforms for each of the two competitions you enter.</p>
+                    </div>
+                    <div class="mt-8 text-center"><a href="https://chat.whatsapp.com/K1CwCDsSbhXFOW4dypEhH4" target="_blank" rel="noopener noreferrer" class="w-full md:w-auto inline-block bg-green-500 text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-green-600 transition-colors">Register via WhatsApp</a></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Justification Section -->
+        <section class="section-bg py-20">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12"><h2 class="text-3xl md:text-5xl font-extrabold">Why Participate?</h2><p class="mt-4 max-w-2xl mx-auto text-gray-400">This is a strategic investment in your future.</p></div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
+                    <div>
+                        <h3 class="text-xl font-bold mb-2">Build Your Profile</h3>
+                        <p class="text-gray-400">Every participant will leave with tangible projects—a GitHub profile, a hosted website, a business pitch—to list on university applications. We will teach you how to document your progress professionally, a skill essential for programs like the Duke of Edinburgh's Award.</p>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-2">A Merit-Based Gateway to Leadership</h3>
+                        <p class="text-gray-400">While all students can join the new clubs, leadership positions must be earned. This challenge provides a fair, transparent process to identify skilled students for these key roles. Excelling here proves you are capable of representing the school in prestigious competitions like the **IIT-B E-Cell Challenge** and leading complex **robotics projects**.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 border-t border-gray-700">
+        <div class="container mx-auto px-6 py-6 text-center text-gray-500"><p>&copy; 2025 208 Groups Pvt Ltd. Events Division.</p></div>
+    </footer>
+
+    <script> lucide.createIcons(); </script>
 </body>
 </html>
