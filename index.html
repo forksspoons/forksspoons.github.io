@@ -149,14 +149,6 @@
         </div>
     </footer>
 
-    <div id="success-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50 opacity-0 pointer-events-none modal-backdrop">
-        <div class="bg-gray-800 rounded-2xl p-8 max-w-sm w-full text-center border border-gray-700 transform scale-95 modal-content">
-            <div class="flex items-center justify-center h-20 w-20 mx-auto bg-green-500/10 text-green-400 rounded-full mb-6"><i data-lucide="check" class="w-12 h-12"></i></div>
-            <h3 class="text-2xl font-bold text-white mb-2">Redirecting...</h3>
-            <p class="text-gray-400 mb-6">Your email app is opening with a pre-filled message. Just hit send!</p>
-            <button id="close-modal" class="bg-indigo-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-indigo-600 transition-colors">Close</button>
-        </div>
-    </div>
 
     <script>
         lucide.createIcons();
@@ -184,11 +176,8 @@
             });
         });
 
-        // --- Mailto Form Handler ---
+       // --- Mailto Form Handler ---
         const contactForm = document.getElementById('contact-form');
-        const modal = document.getElementById('success-modal');
-        const modalContent = modal.querySelector('.modal-content');
-        const closeModalButton = document.getElementById('close-modal');
 
         contactForm.addEventListener('submit', function(event) {
             event.preventDefault();
@@ -201,30 +190,14 @@
             
             const mailtoLink = `mailto:spoons_and_forks@aol.com?subject=${subjectEncoded}&body=${bodyEncoded}`;
             
-            window.location.href = mailtoLink;
+            // This is a more robust way to open the mail client across all devices.
+            window.open(mailtoLink, '_self');
 
-            modal.classList.remove('opacity-0', 'pointer-events-none');
-            modal.classList.add('opacity-100');
-            modalContent.classList.remove('scale-95');
-            modalContent.classList.add('scale-100');
-
-            contactForm.reset();
-        });
-
-        function closeModal() {
-            modal.classList.add('opacity-0');
-            modalContent.classList.add('scale-95');
+            // We reset the form after a short delay to ensure the mail client has opened.
             setTimeout(() => {
-                modal.classList.add('pointer-events-none');
-            }, 300);
-        }
-
-        closeModalButton.addEventListener('click', closeModal);
-        modal.addEventListener('click', (event) => {
-            if (event.target === modal) closeModal();
+                contactForm.reset();
+            }, 500);
         });
-
-        // --- Scroll Animation Handler ---
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
