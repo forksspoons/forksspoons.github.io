@@ -118,7 +118,7 @@
                     <p class="text-gray-400 mb-6">Have a question or a rental inquiry? Fill out the form below. Your message will be sent directly to our inbox.</p>
                    <form action="https://formsubmit.co/spoons_and_forks@aol.com" method="POST" class="space-y-4 text-left">
                         <!-- FormSubmit Settings -->
-                        <input type="hidden" name="_next" value="https://chamachlelo.tech"> <!-- Redirects back to your site -->
+                        <input type="hidden" name="_next" value="https://chamachlelo.tech?form=success#contact">
                         <input type="hidden" name="_captcha" value="false"> <!-- Disables the CAPTCHA -->
                         <input type="text" name="_honey" style="display:none"> <!-- Honeypot spam protection -->
 
@@ -151,10 +151,38 @@
         <div class="container mx-auto px-6 py-6 text-center text-gray-500">
             <p>&copy; 2025 208 Groups Pvt Ltd. All Rights Reserved.</p>
         </div>
+        <!-- Sent Confirmation Popup -->
+<div id="sent-popup" class="fixed bottom-5 right-5 bg-green-500 text-white py-2 px-4 rounded-lg shadow-lg transition-all duration-500 transform translate-y-20 opacity-0 pointer-events-none">
+    <p class="flex items-center"><i data-lucide="check-circle" class="w-5 h-5 mr-2"></i>Email Sent!</p>
+</div>
     </footer>
 
     <script>
         lucide.createIcons();
+
+        // --- Form Submission Popup Handler ---
+window.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('form') && params.get('form') === 'success') {
+        const popup = document.getElementById('sent-popup');
+        
+        // Use a timeout to make the animation smooth on page load
+        setTimeout(() => {
+            popup.classList.remove('opacity-0');
+            popup.classList.remove('translate-y-20');
+        }, 100);
+
+        // Hide it after 4 seconds
+        setTimeout(() => {
+            popup.classList.add('opacity-0');
+            popup.classList.add('translate-y-20');
+        }, 4000);
+
+        // Clean the URL in the user's browser bar
+        const newUrl = window.location.pathname + window.location.hash;
+        history.replaceState(null, '', newUrl);
+    }
+});
 
         // --- Mobile Menu Handler ---
         const mobileMenuButton = document.getElementById('mobile-menu-button');
