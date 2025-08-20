@@ -21,8 +21,6 @@
         .hero-bg { background-color: #111827; background-image: radial-gradient(circle at top right, rgba(99, 102, 241, 0.2), transparent 40%), radial-gradient(circle at bottom left, rgba(168, 85, 247, 0.2), transparent 40%); }
         .gradient-text { background: linear-gradient(90deg, #a78bfa, #818cf8, #60a5fa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .form-input:focus { outline: 2px solid #818cf8; box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.3); border-color: #818cf8; }
-        .modal-backdrop { transition: opacity 0.3s ease-in-out; }
-        .modal-content { transition: transform 0.3s ease-in-out; }
         .hero-text-shadow { text-shadow: 0px 2px 15px rgba(0, 0, 0, 0.5); }
         
         /* Animation for sections fading in on scroll */
@@ -117,26 +115,26 @@
                 <h2 class="text-4xl md:text-5xl font-extrabold mt-2 mb-12">Contact Us</h2>
                 <div class="max-w-2xl mx-auto bg-gray-800 rounded-2xl p-8 border border-gray-700">
                     <h3 class="text-2xl font-bold mb-2">Send us an Email</h3>
-                    <p class="text-gray-400 mb-6">Have a question or a rental inquiry? Fill out the form below and it will open in your default email app.</p>
+                    <p class="text-gray-400 mb-6">Have a question or a rental inquiry? Fill out the form below. Your message will be sent directly to our inbox.</p>
                    <form action="https://formsubmit.co/spoons_and_forks@aol.com" method="POST" class="space-y-4 text-left">
-    <!-- FormSubmit Settings -->
-    <input type="hidden" name="_next" value="https://chamachlelo.tech"> <!-- Redirects back to your site -->
-    <input type="hidden" name="_captcha" value="false"> <!-- Disables the CAPTCHA -->
-    <input type="text" name="_honey" style="display:none"> <!-- Honeypot spam protection -->
+                        <!-- FormSubmit Settings -->
+                        <input type="hidden" name="_next" value="https://chamachlelo.tech"> <!-- Redirects back to your site -->
+                        <input type="hidden" name="_captcha" value="false"> <!-- Disables the CAPTCHA -->
+                        <input type="text" name="_honey" style="display:none"> <!-- Honeypot spam protection -->
 
-    <!-- Visible Form Fields -->
-    <div>
-        <label for="subject" class="block text-sm font-medium text-gray-300">Subject</label>
-        <input type="text" id="subject" name="subject" required class="form-input mt-1 block w-full bg-gray-700 border-gray-600 rounded-md shadow-sm py-2 px-3 text-white transition">
-    </div>
-    <div>
-        <label for="message" class="block text-sm font-medium text-gray-300">Message</label>
-        <textarea id="message" name="message" rows="4" required class="form-input mt-1 block w-full bg-gray-700 border-gray-600 rounded-md shadow-sm py-2 px-3 text-white transition"></textarea>
-    </div>
-    <button type="submit" class="w-full bg-indigo-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-indigo-600 transition-colors">
-        Send Email
-    </button>
-</form>
+                        <!-- Visible Form Fields -->
+                        <div>
+                            <label for="subject" class="block text-sm font-medium text-gray-300">Subject</label>
+                            <input type="text" id="subject" name="subject" required class="form-input mt-1 block w-full bg-gray-700 border-gray-600 rounded-md shadow-sm py-2 px-3 text-white transition">
+                        </div>
+                        <div>
+                            <label for="message" class="block text-sm font-medium text-gray-300">Message</label>
+                            <textarea id="message" name="message" rows="4" required class="form-input mt-1 block w-full bg-gray-700 border-gray-600 rounded-md shadow-sm py-2 px-3 text-white transition"></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-indigo-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-indigo-600 transition-colors">
+                            Send Email
+                        </button>
+                    </form>
                 </div>
                 <div class="mt-16">
                     <i data-lucide="message-circle" class="w-16 h-16 mx-auto text-green-400 mb-4"></i>
@@ -154,7 +152,6 @@
             <p>&copy; 2025 208 Groups Pvt Ltd. All Rights Reserved.</p>
         </div>
     </footer>
-
 
     <script>
         lucide.createIcons();
@@ -182,28 +179,7 @@
             });
         });
 
-       // --- Mailto Form Handler ---
-        const contactForm = document.getElementById('contact-form');
-
-        contactForm.addEventListener('submit', function(event) {
-            event.preventDefault();
-            
-            const subject = document.getElementById('subject').value;
-            const message = document.getElementById('message').value;
-            
-            const subjectEncoded = encodeURIComponent(subject);
-            const bodyEncoded = encodeURIComponent(message);
-            
-            const mailtoLink = `mailto:spoons_and_forks@aol.com?subject=${subjectEncoded}&body=${bodyEncoded}`;
-            
-            // This is a more robust way to open the mail client across all devices.
-            window.open(mailtoLink, '_self');
-
-            // We reset the form after a short delay to ensure the mail client has opened.
-            setTimeout(() => {
-                contactForm.reset();
-            }, 500);
-        });
+        // --- Scroll Animation Handler ---
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
