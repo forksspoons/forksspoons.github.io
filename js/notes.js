@@ -1,4 +1,6 @@
 // --- IMPORTANT: SUPABASE SETUP ---
+// We now import the createClient function directly from the Supabase CDN.
+// This is the modern, reliable way to do it and fixes the loading issue.
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
 
 const SUPABASE_URL = 'https://cxuteylfjxbbwyvlkcew.supabase.co'; 
@@ -9,6 +11,8 @@ const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 
 // --- "Disable Inspect" Security Deterrent ---
+// This is a best-effort script. It will deter most casual users but can be bypassed.
+// It's placed at the top to run as early as possible.
 document.addEventListener('contextmenu', event => event.preventDefault());
 document.onkeydown = function (e) {
     if (e.keyCode == 123) return false; // F12
@@ -18,38 +22,58 @@ document.onkeydown = function (e) {
 // --- END OF SECURITY DETERRENT ---
 
 
-let allNotes = []; // Global variable to store all notes after fetching
+// Global variable to store all notes after fetching
+let allNotes = [];
 
-// This function runs when the page loads
-document.addEventListener('DOMContentLoaded', async () => {
+/**
+ * Main function to initialize the application
+ */
+async function initializeApp() {
     const loadingState = document.getElementById('loading-state');
-    
-    // 1. Fetch all the notes from the 'notes' table
-    const { data, error } = await supabaseClient.from('notes').select('*');
 
-    if (error) {
-        console.error('Error fetching notes:', error);
-        loadingState.textContent = 'Could not load resources.';
-        return;
+    try {
+        // Fetch all notes from the 'notes' table
+        const { data, error } = await supabaseClient
+            .from('notes')
+            .select('*')
+            .order('subject', { ascending: true });
+
+        if (error) {
+            // Throw the error to be caught by the catch block
+            throw error;
+        }
+
+        if (!data || data.length === 0) {
+            showError('No resources found in the database.');
+            return;
+        }
+
+        allNotes = data;
+        renderSubjectSelection(); // Start by showing the main subject grid
+
+    } catch (error) {
+        console.error('Initialization Error:', error);
+        showError('Could not connect to the database. Please check your Supabase keys and table name.');
     }
+}
 
-    allNotes = data;
-    showSubjectSelection(); // Show the main subject grid
-});
-
-// Renders the initial screen with subject choices
-function showSubjectSelection() {
+/**
+ * Renders the main screen with subject choices
+ */
+function renderSubjectSelection() {
     const notesContainer = document.getElementById('notes-container');
-    const subjects = [...new Set(allNotes.map(note => note.subject))]; // Get unique subjects
+    const loadingState = document.getElementById('loading-state');
+    if(loadingState) loadingState.style.display = 'none';
+
+    const subjects = [...new Set(allNotes.map(note => note.subject))];
 
     let html = '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">';
     subjects.forEach(subject => {
         const subjectCode = allNotes.find(n => n.subject === subject).caie_code;
-        // UPDATED: Conditionally show the CAIE code only if it's not -1
         const codeHtml = subjectCode !== -1 ? `<p class="text-sm text-gray-400">CAIE Code: ${subjectCode}</p>` : '';
 
         html += `
-            <div onclick="showSubjectDetail('${subject}')" class="subject-card bg-gray-800 p-6 rounded-2xl border border-gray-700 cursor-pointer">
+            <div data-subject="${subject}" class="subject-card bg-gray-800 p-6 rounded-2xl border border-gray-700 cursor-pointer">
                 <div class="flex items-center">
                     <i data-lucide="folder" class="w-10 h-10 mr-4 text-cyan-400"></i>
                     <div>
@@ -63,44 +87,50 @@ function showSubjectSelection() {
     html += '</div>';
     
     notesContainer.innerHTML = html;
-    document.getElementById('loading-state').style.display = 'none';
     lucide.createIcons();
+
+    // Attach event listeners after rendering the HTML
+    document.querySelectorAll('.subject-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const subjectName = card.dataset.subject;
+            renderSubjectDetail(subjectName);
+        });
+    });
 }
 
-// Renders the detailed view for a single subject
-function showSubjectDetail(subjectName) {
+/**
+ * Renders the detailed view for a single subject
+ * @param {string} subjectName - The name of the subject to display
+ */
+function renderSubjectDetail(subjectName) {
     const notesContainer = document.getElementById('notes-container');
     const subjectNotes = allNotes.filter(note => note.subject === subjectName);
     
-    // UPDATED: Filter for AS, A2, and now General (-1) levels
     const asLevelNotes = subjectNotes.filter(n => n.level === 'AS');
     const a2LevelNotes = subjectNotes.filter(n => n.level === 'A2');
     const generalNotes = subjectNotes.filter(n => n.level === '-1');
 
     let html = `
         <div class="space-y-8">
-            <button onclick="showSubjectSelection()" class="flex items-center text-gray-400 hover:text-white transition-colors">
+            <button id="back-button" class="flex items-center text-gray-400 hover:text-white transition-colors">
                 <i data-lucide="arrow-left" class="w-5 h-5 mr-2"></i>
                 Back to Subjects
             </button>
             <h2 class="text-4xl font-bold text-center">${subjectName}</h2>
     `;
 
-    // Add AS Level Section if notes exist
     if (asLevelNotes.length > 0) {
         html += `<div class="bg-gray-800/50 p-6 rounded-lg"><h3 class="text-2xl font-bold mb-4 text-indigo-300">AS Level</h3><ul class="space-y-2">`;
         asLevelNotes.forEach(note => html += generateNoteItemHTML(note));
         html += `</ul></div>`;
     }
 
-    // Add A2 Level Section if notes exist
     if (a2LevelNotes.length > 0) {
         html += `<div class="bg-gray-800/50 p-6 rounded-lg"><h3 class="text-2xl font-bold mb-4 text-purple-300">A2 Level</h3><ul class="space-y-2">`;
         a2LevelNotes.forEach(note => html += generateNoteItemHTML(note));
         html += `</ul></div>`;
     }
 
-    // UPDATED: Add General Resources Section if notes exist
     if (generalNotes.length > 0) {
         html += `<div class="bg-gray-800/50 p-6 rounded-lg"><h3 class="text-2xl font-bold mb-4 text-gray-300">General Resources</h3><ul class="space-y-2">`;
         generalNotes.forEach(note => html += generateNoteItemHTML(note));
@@ -111,9 +141,16 @@ function showSubjectDetail(subjectName) {
 
     notesContainer.innerHTML = html;
     lucide.createIcons();
+
+    // Attach event listener to the new back button
+    document.getElementById('back-button').addEventListener('click', renderSubjectSelection);
 }
 
-// Helper function to generate a single note item
+/**
+ * Helper function to generate the HTML for a single note item
+ * @param {object} note - A single note object from the database
+ * @returns {string} - The HTML string for the list item
+ */
 function generateNoteItemHTML(note) {
     const icon = note.type === 'file' ? 'file-text' : 'link';
     return `
@@ -127,6 +164,16 @@ function generateNoteItemHTML(note) {
     `;
 }
 
-// Make functions globally accessible so inline onclick handlers work
-window.showSubjectDetail = showSubjectDetail;
-window.showSubjectSelection = showSubjectSelection;
+/**
+ * Displays an error message in the main container
+ * @param {string} message - The error message to show the user
+ */
+function showError(message) {
+    const notesContainer = document.getElementById('notes-container');
+    const loadingState = document.getElementById('loading-state');
+    if (loadingState) loadingState.style.display = 'none';
+    notesContainer.innerHTML = `<p class="text-center text-red-400">${message}</p>`;
+}
+
+// Run the app
+initializeApp();
