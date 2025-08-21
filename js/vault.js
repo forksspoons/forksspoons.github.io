@@ -11,110 +11,114 @@ const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // --- "Disable Inspect" Security Deterrent ---
 document.addEventListener('contextmenu', event => event.preventDefault());
 document.onkeydown = function (e) {
-    if (e.keyCode == 123) { // F12
-        return false;
-    }
-    if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { // Ctrl+Shift+I
-        return false;
-    }
-    if (e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) { // Ctrl+Shift+C
-        return false;
-    }
-    if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) { // Ctrl+Shift+J
-        return false;
-    }
-    if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { // Ctrl+U
-        return false;
-    }
+    if (e.keyCode == 123) return false; // F12
+    if (e.ctrlKey && e.shiftKey && (e.keyCode == 'I'.charCodeAt(0) || e.keyCode == 'C'.charCodeAt(0) || e.keyCode == 'J'.charCodeAt(0))) return false;
+    if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
 };
 // --- END OF SECURITY DETERRENT ---
 
 
-// This function runs when the page loads
-document.addEventListener('DOMContentLoaded', () => {
-    loadNotes();
-});
+let allNotes = []; // Global variable to store all notes after fetching
 
-async function loadNotes() {
-    const notesContainer = document.getElementById('notes-container');
+// This function runs when the page loads
+document.addEventListener('DOMContentLoaded', async () => {
+    const loadingState = document.getElementById('loading-state');
     
-    // 1. Fetch all the notes from the 'notes' table in your database
-    const { data: notes, error } = await supabaseClient
-        .from('notes')
-        .select('*')
-        .order('subject', { ascending: true });
+    // 1. Fetch all the notes from the 'notes' table
+    const { data, error } = await supabaseClient.from('notes').select('*');
 
     if (error) {
         console.error('Error fetching notes:', error);
-        document.getElementById('loading-state').textContent = 'Could not load resources.';
+        loadingState.textContent = 'Could not load resources.';
         return;
     }
 
-    // 2. Group the notes by subject
-    const notesBySubject = notes.reduce((acc, note) => {
-        (acc[note.subject] = acc[note.subject] || []).push(note);
-        return acc;
-    }, {});
+    allNotes = data;
+    showSubjectSelection(); // Show the main subject grid
+});
 
-    // 3. Build the HTML for the page
-    let html = '';
-    for (const subject in notesBySubject) {
-        const asLevelNotes = notesBySubject[subject].filter(n => n.level === 'AS');
-        const a2LevelNotes = notesBySubject[subject].filter(n => n.level === 'A2');
-        const subjectCode = notesBySubject[subject][0].caie_code; // Get code from first entry
+// Renders the initial screen with subject choices
+function showSubjectSelection() {
+    const notesContainer = document.getElementById('notes-container');
+    const subjects = [...new Set(allNotes.map(note => note.subject))]; // Get unique subjects
+
+    let html = '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">';
+    subjects.forEach(subject => {
+        const subjectCode = allNotes.find(n => n.subject === subject).caie_code;
+        // UPDATED: Conditionally show the CAIE code only if it's not -1
+        const codeHtml = subjectCode !== -1 ? `<p class="text-sm text-gray-400">CAIE Code: ${subjectCode}</p>` : '';
 
         html += `
-            <div class="bg-gray-800/50 border border-gray-700 rounded-2xl">
-                <button class="accordion-toggle flex items-center justify-between w-full p-6 text-left">
-                    <div class="flex items-center">
-                        <i data-lucide="folder" class="w-8 h-8 mr-4 text-cyan-400"></i>
-                        <div>
-                            <h2 class="text-2xl font-bold">${subject}</h2>
-                            <p class="text-sm text-gray-400">CAIE Code: ${subjectCode}</p>
-                        </div>
+            <div onclick="showSubjectDetail('${subject}')" class="subject-card bg-gray-800 p-6 rounded-2xl border border-gray-700 cursor-pointer">
+                <div class="flex items-center">
+                    <i data-lucide="folder" class="w-10 h-10 mr-4 text-cyan-400"></i>
+                    <div>
+                        <h2 class="text-xl font-bold">${subject}</h2>
+                        ${codeHtml}
                     </div>
-                    <i data-lucide="chevron-down" class="w-6 h-6 transition-transform duration-300"></i>
-                </button>
-                <div class="accordion-content px-6 pb-6">
+                </div>
+            </div>
         `;
-
-        // Add AS Level Section if notes exist
-        if (asLevelNotes.length > 0) {
-            html += `<h3 class="text-lg font-bold mt-4 mb-2 text-indigo-300">AS Level</h3><ul class="space-y-2">`;
-            asLevelNotes.forEach(note => {
-                html += generateNoteItemHTML(note);
-            });
-            html += `</ul>`;
-        }
-
-        // Add A2 Level Section if notes exist
-        if (a2LevelNotes.length > 0) {
-            html += `<h3 class="text-lg font-bold mt-4 mb-2 text-purple-300">A2 Level</h3><ul class="space-y-2">`;
-            a2LevelNotes.forEach(note => {
-                html += generateNoteItemHTML(note);
-            });
-            html += `</ul>`;
-        }
-
-        html += `</div></div>`;
-    }
-
+    });
+    html += '</div>';
+    
     notesContainer.innerHTML = html;
     document.getElementById('loading-state').style.display = 'none';
     lucide.createIcons();
-    setupAccordions();
 }
 
-function generateNoteItemHTML(note) {
-    const isFile = note.type === 'file';
-    const linkAction = isFile 
-        ? `onclick="handleFileClick('${note.url}')"` 
-        : `href="${note.url}" target="_blank" rel="noopener noreferrer"`;
-    const icon = isFile ? 'file-text' : 'link';
+// Renders the detailed view for a single subject
+function showSubjectDetail(subjectName) {
+    const notesContainer = document.getElementById('notes-container');
+    const subjectNotes = allNotes.filter(note => note.subject === subjectName);
+    
+    // UPDATED: Filter for AS, A2, and now General (-1) levels
+    const asLevelNotes = subjectNotes.filter(n => n.level === 'AS');
+    const a2LevelNotes = subjectNotes.filter(n => n.level === 'A2');
+    const generalNotes = subjectNotes.filter(n => n.level === '-1');
 
+    let html = `
+        <div class="space-y-8">
+            <button onclick="showSubjectSelection()" class="flex items-center text-gray-400 hover:text-white transition-colors">
+                <i data-lucide="arrow-left" class="w-5 h-5 mr-2"></i>
+                Back to Subjects
+            </button>
+            <h2 class="text-4xl font-bold text-center">${subjectName}</h2>
+    `;
+
+    // Add AS Level Section if notes exist
+    if (asLevelNotes.length > 0) {
+        html += `<div class="bg-gray-800/50 p-6 rounded-lg"><h3 class="text-2xl font-bold mb-4 text-indigo-300">AS Level</h3><ul class="space-y-2">`;
+        asLevelNotes.forEach(note => html += generateNoteItemHTML(note));
+        html += `</ul></div>`;
+    }
+
+    // Add A2 Level Section if notes exist
+    if (a2LevelNotes.length > 0) {
+        html += `<div class="bg-gray-800/50 p-6 rounded-lg"><h3 class="text-2xl font-bold mb-4 text-purple-300">A2 Level</h3><ul class="space-y-2">`;
+        a2LevelNotes.forEach(note => html += generateNoteItemHTML(note));
+        html += `</ul></div>`;
+    }
+
+    // UPDATED: Add General Resources Section if notes exist
+    if (generalNotes.length > 0) {
+        html += `<div class="bg-gray-800/50 p-6 rounded-lg"><h3 class="text-2xl font-bold mb-4 text-gray-300">General Resources</h3><ul class="space-y-2">`;
+        generalNotes.forEach(note => html += generateNoteItemHTML(note));
+        html += `</ul></div>`;
+    }
+
+    html += '</div>';
+
+    notesContainer.innerHTML = html;
+    lucide.createIcons();
+}
+
+// Helper function to generate a single note item
+function generateNoteItemHTML(note) {
+    const icon = note.type === 'file' ? 'file-text' : 'link';
     return `
         <li>
-            <a ${linkAction} class="note-item flex items-center p-3 bg-gray-900 rounded-lg hover:bg-gray-700 transition-colors duration-200 cursor-pointer">
+            <a href="${note.url}" target="_blank" rel="noopener noreferrer" class="note-item flex items-center p-3 bg-gray-900 rounded-lg hover:bg-gray-700 transition-colors duration-200 cursor-pointer">
                 <i data-lucide="${icon}" class="note-icon w-5 h-5 mr-3 text-gray-400 transition-colors"></i>
                 <span class="flex-1">${note.title}</span>
                 <i data-lucide="arrow-up-right" class="w-4 h-4 text-gray-500"></i>
@@ -123,28 +127,6 @@ function generateNoteItemHTML(note) {
     `;
 }
 
-function setupAccordions() {
-    const toggles = document.querySelectorAll('.accordion-toggle');
-    toggles.forEach(toggle => {
-        toggle.addEventListener('click', () => {
-            const content = toggle.nextElementSibling;
-            const icon = toggle.querySelector('[data-lucide="chevron-down"]');
-            
-            if (content.style.maxHeight) {
-                content.style.maxHeight = null;
-                icon.style.transform = 'rotate(0deg)';
-            } else {
-                content.style.maxHeight = content.scrollHeight + "px";
-                icon.style.transform = 'rotate(180deg)';
-            }
-        });
-    });
-}
-
-// Global function to handle clicks on file links
-window.handleFileClick = function(fileUrl) {
-    // For Internet Archive links, we just open them.
-    // In a real secure system, this would generate a temporary URL.
-    window.open(fileUrl, '_blank');
-}
-
+// Make functions globally accessible so inline onclick handlers work
+window.showSubjectDetail = showSubjectDetail;
+window.showSubjectSelection = showSubjectSelection;
